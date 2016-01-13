@@ -59,8 +59,7 @@ def __day_regex_after(year, month, day):
 
 
 def regex_date_after(given_date):
-    today = date.strftime(given_date, '%Y-%m-%d')
-    year, month, day = today.split('-')
+    year, month, day = given_date.isoformat().split('-')
 
     year_regex = __year_regex_after(year)
     month_regex = __month_regex_after(year, month)
@@ -70,15 +69,16 @@ def regex_date_after(given_date):
 
 
 
-date_regex = regex_date_after(date.today())
-pattern = re.compile(date_regex)
+def __main():
+    date_regex = regex_date_after(date.today())
+    print(date_regex)
+    pattern = re.compile(date_regex)
 
-d = date.today()
-next_day = timedelta(days=1)
-prev_day = timedelta(days=-1)
 
-d += next_day
-while d.year < 10001:
+    d = date.today() + date.resolution
     assert pattern.match(date.strftime(d, '%Y-%m-%d')) is not None
     print(date.strftime(d, '%Y-%m-%d') + ' is okay')
-    d += next_day
+    d += date.resolution
+
+if __name__ == '__main__':
+    __main()
