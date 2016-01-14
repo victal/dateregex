@@ -2,21 +2,19 @@
 # -*- coding: utf-8 -*-
 
 from datetime import date, timedelta
-import re
 
 
 def __year_regex_after(year):
-    year_regex = r'(\d+\d{%s}|' % len(year)
+    year_regex = r'(\d+\d{%s}' % len(year)
     for idx, digit in enumerate(year):
         if digit != '9':
-            regex = year[0:idx]
+            regex = '|' + year[0:idx]
             regex += '9' if digit == '8' else '[%s-9]' % str(int(digit) + 1)
             if idx < len(year) - 1:
-                regex += '\d{%s}|' % (len(year) - (idx + 1)) 
-            else: 
-                regex += ')'
-
+                regex += '\d{%s}' % (len(year) - (idx + 1)) 
             year_regex += regex
+
+    year_regex += ')'
     return '-'.join((year_regex, r'\d{2}', r'\d{2}'))
 
 
@@ -38,7 +36,7 @@ def __month_regex_after(year, month):
     return '-'.join((year, month_regex, r'\d{2}'))
 
 def __day_regex_after(year, month, day):
-    last_month_day = str((date(int(year), int(month) + 1, 1) - date.resolution).day)
+    last_month_day = str((date(int(year), (int(month) + 1) % 12, 1) + - date.resolution).day)
     if day == last_month_day:
         return None
     day_regex = r'('
@@ -52,7 +50,7 @@ def __day_regex_after(year, month, day):
         day_regex +=r'\d'
         if digit2 < '9':
             day_regex += '|' + digit1
-            day_regex += '9' if digit2 == '8' else r'[%s-9]' % str(int(digit1) + 1)
+            day_regex += '9' if digit2 == '8' else r'[%s-9]' % str(int(digit2) + 1)
 
         day_regex += ')'
     return '-'.join((year, month, day_regex))
@@ -65,12 +63,16 @@ def regex_date_after(given_date):
     month_regex = __month_regex_after(year, month)
     day_regex = __day_regex_after(year, month, day)
 
-    return  r'(' + '|'.join((year_regex, month_regex, day_regex)) + ')'
-
+    date_regex = '(' + year_regex
+    date_regex += ('|' + month_regex) if month_regex else ''
+    date_regex += ('|' + day_regex) if day_regex else ''
+    date_regex += ')'
+    return date_regex
 
 
 def __main():
-    date_regex = regex_date_after(date.today())
+    import re
+    date_regex = regex_date_after(date(1999,12,31))
     print(date_regex)
     pattern = re.compile(date_regex)
 
