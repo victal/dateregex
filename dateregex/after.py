@@ -25,7 +25,7 @@ def _month_regex_after(year, month):
     if month == '12':
         return None
 
-    digit1, digit2 = (x for x in month)
+    digit1, digit2 = month
     if digit1 == '1':
         month_regex = r'12' if month == '11' else r'1[12]'
     else:
@@ -43,8 +43,8 @@ def _day_regex_after(year, month, day):
     if day == last_month_day:
         return None
     day_regex = r'('
-    digit1, digit2 = (d for d in day)
-    last_digit1, last_digit2 = (d for d in last_month_day)
+    digit1, digit2 = day
+    last_digit1, last_digit2 = last_month_day
     if digit1 == last_digit1:
         day_regex = last_month_day if int(digit2) == int(last_digit2) - 1 else last_digit1 + r'[%s-%s]' % (str(int(digit2) + 1), last_digit2)
     else:
@@ -66,7 +66,7 @@ def regex_date_after(given_date):
     month_regex = _month_regex_after(year, month)
     day_regex = _day_regex_after(year, month, day)
 
-    date_regex = '(' + year_regex
+    date_regex = '(' + year_regex if year_regex else '('
     date_regex += ('|' + month_regex) if month_regex else ''
     date_regex += ('|' + day_regex) if day_regex else ''
     date_regex += ')'
