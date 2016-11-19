@@ -39,7 +39,7 @@ def _month_regex_after(year, month):
     return '-'.join((year, month_regex, r'\d{2}'))
 
 def _day_regex_after(year, month, day):
-    last_month_day = str((date(int(year), (int(month) + 1) % 12, 1) + - date.resolution).day)
+    last_month_day = str((date(int(year), int(month) % 12 + 1, 1) + - date.resolution).day)
     if day == last_month_day:
         return None
     day_regex = r'('

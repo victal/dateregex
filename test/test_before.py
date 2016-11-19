@@ -120,3 +120,13 @@ class TestBeforeRegex(unittest.TestCase):
                 self.assertRegexpMatches('2046-04-%.2d' % j, day_regex)
             for j in range(i, 31):
                 self.assertNotRegexpMatches('2046-04-%.2d' % j, day_regex)
+
+    def test_november_day_regex(self):
+        """Tests the fix for issue #1 on Github"""
+        for i in range(2, 31):
+            day_regex = _day_regex_before('2046', '11', '%.2d' % i)
+            day_regex = '^' + day_regex + '$'
+            for j in range(1,i):
+                self.assertRegexpMatches('2046-11-%.2d' % j, day_regex)
+            for j in range(i, 31):
+                self.assertNotRegexpMatches('2046-11-%.2d' % j, day_regex)
